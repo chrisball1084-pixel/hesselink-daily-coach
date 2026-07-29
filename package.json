@@ -1,0 +1,20 @@
+{
+  "name": "hesselink-daily-coach",
+  "version": "1.0.0-beta.1",
+  "private": true,
+  "type": "module",
+  "packageManager": "pnpm@11.9.0",
+  "engines": {
+    "node": ">=22.12.0"
+  },
+  "scripts": {
+    "test": "node --test tests/core.test.mjs tests/pwa.test.mjs",
+    "dev": "vite",
+    "build": "vite build",
+    "preview": "vite preview --host 127.0.0.1",
+    "test:dist": "node --test tests/dist.test.mjs"
+  },
+  "devDependencies": {
+    "vite": "^7.0.0"
+  }
+}

@@ -1,0 +1,223 @@
+<!doctype html>
+<html lang="de">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+    <meta name="theme-color" content="#07111f" />
+    <meta name="color-scheme" content="dark" />
+    <meta name="description" content="Dein lokaler Daily Coach für klare Gewohnheiten, Training und Wochenfokus." />
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <meta name="mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+    <meta name="apple-mobile-web-app-title" content="Daily Coach" />
+    <link rel="manifest" href="%BASE_URL%manifest.webmanifest" />
+    <link rel="apple-touch-icon" href="%BASE_URL%icons/icon-192.png" />
+    <link rel="icon" href="%BASE_URL%icons/icon-192.png" />
+    <link rel="stylesheet" href="./styles.css" />
+    <title>Hesselink Daily Coach</title>
+  </head>
+  <body>
+    <a class="skip-link" href="#main-content">Zum Inhalt</a>
+
+    <div class="app-shell">
+      <header class="topbar">
+        <a class="brand" href="#today" data-view-link="today" aria-label="Heute öffnen">
+          <span class="brand-mark" aria-hidden="true"><i></i><i></i></span>
+          <span>
+            <strong>Hesselink</strong>
+            <small>Daily Coach <b>Beta</b></small>
+          </span>
+        </a>
+        <span class="local-badge" title="Daten bleiben auf diesem Gerät">
+          <span class="status-dot" aria-hidden="true"></span>
+          Lokal
+        </span>
+      </header>
+
+      <main id="main-content" tabindex="-1">
+        <div id="app" aria-live="polite"></div>
+      </main>
+
+      <nav class="bottom-nav" aria-label="Hauptnavigation">
+        <button type="button" data-view="today" aria-label="Heute">
+          <span class="nav-icon nav-today" aria-hidden="true"></span>
+          <span>Heute</span>
+        </button>
+        <button type="button" data-view="week" aria-label="Woche">
+          <span class="nav-icon nav-week" aria-hidden="true"></span>
+          <span>Woche</span>
+        </button>
+        <button type="button" data-view="review" aria-label="Rückblick">
+          <span class="nav-icon nav-review" aria-hidden="true"></span>
+          <span>Rückblick</span>
+        </button>
+        <button type="button" data-view="settings" aria-label="Einstellungen">
+          <span class="nav-icon nav-settings" aria-hidden="true"></span>
+          <span>Einstellungen</span>
+        </button>
+      </nav>
+    </div>
+
+    <dialog id="week-dialog" class="modal">
+      <form method="dialog" id="week-form">
+        <div class="modal-head">
+          <div>
+            <span class="eyebrow">Wochenstart</span>
+            <h2>Die Woche klar beginnen</h2>
+          </div>
+          <button type="button" class="icon-button" data-close-dialog aria-label="Schließen">×</button>
+        </div>
+        <p class="modal-intro">Ein Ziel. Ein Fokus. Drei bewusst geplante Trainingsfenster.</p>
+        <label>
+          Persönliches Wochenziel
+          <input name="goal" maxlength="120" placeholder="Was möchtest du diese Woche erreichen?" />
+        </label>
+        <label>
+          Fokus der Woche
+          <select name="focusHabitId" id="week-focus-select">
+            <option value="">Kein einzelner Gewohnheitsfokus</option>
+          </select>
+          <small>Wähle eine aktive Gewohnheit aus deiner Daily Checklist.</small>
+        </label>
+        <label>
+          Ziel-Prozentwert
+          <span class="range-row">
+            <input name="targetPercent" type="range" min="50" max="100" step="5" value="80" />
+            <output id="target-output">80 %</output>
+          </span>
+        </label>
+        <fieldset>
+          <legend>Geplante Trainingstage</legend>
+          <div class="day-checkboxes" id="week-training-days"></div>
+        </fieldset>
+        <div class="modal-actions">
+          <button type="button" class="button ghost" data-dismiss-week>Später</button>
+          <button type="submit" class="button primary">Woche starten</button>
+        </div>
+      </form>
+    </dialog>
+
+    <dialog id="habit-dialog" class="modal">
+      <form method="dialog" id="habit-form">
+        <div class="modal-head">
+          <div>
+            <span class="eyebrow">Gewohnheit</span>
+            <h2 id="habit-dialog-title">Gewohnheit bearbeiten</h2>
+          </div>
+          <button type="button" class="icon-button" data-close-dialog aria-label="Schließen">×</button>
+        </div>
+        <label>
+          Name
+          <input name="name" maxlength="90" required />
+        </label>
+        <label>
+          Persönliche Beschreibung
+          <textarea name="description" maxlength="240" rows="3" placeholder="Warum ist diese Gewohnheit wichtig?"></textarea>
+        </label>
+        <label>
+          Kategorie
+          <select name="category">
+            <option>Foundation</option>
+            <option>Performance</option>
+            <option>Discipline</option>
+          </select>
+        </label>
+        <fieldset>
+          <legend>Aktive Wochentage</legend>
+          <div class="day-checkboxes" id="habit-active-days"></div>
+        </fieldset>
+        <label class="switch-row">
+          <span>
+            <strong>Im Score berücksichtigen</strong>
+            <small>Erledigt ergibt einen Punkt.</small>
+          </span>
+          <input name="scoreRelevant" type="checkbox" checked />
+        </label>
+        <label class="switch-row">
+          <span>
+            <strong>Aktiv</strong>
+            <small>Deaktivieren erhält historische Daten.</small>
+          </span>
+          <input name="active" type="checkbox" checked />
+        </label>
+        <div class="modal-actions">
+          <button type="button" class="button ghost" data-close-dialog>Abbrechen</button>
+          <button type="submit" class="button primary">Speichern</button>
+        </div>
+      </form>
+    </dialog>
+
+    <dialog id="move-dialog" class="modal compact-modal">
+      <form method="dialog" id="move-form">
+        <div class="modal-head">
+          <div>
+            <span class="eyebrow">Training</span>
+            <h2>Training verschieben</h2>
+          </div>
+          <button type="button" class="icon-button" data-close-dialog aria-label="Schließen">×</button>
+        </div>
+        <label>
+          Neuer Tag in dieser Woche
+          <select name="targetDate" id="move-target-date"></select>
+        </label>
+        <div class="modal-actions">
+          <button type="button" class="button ghost" data-close-dialog>Abbrechen</button>
+          <button type="submit" class="button primary">Verschieben</button>
+        </div>
+      </form>
+    </dialog>
+
+    <dialog id="cardio-dialog" class="modal compact-modal">
+      <form method="dialog" id="cardio-form">
+        <div class="modal-head">
+          <div>
+            <span class="eyebrow">Zusatztraining</span>
+            <h2>Cardio erfassen</h2>
+          </div>
+          <button type="button" class="icon-button" data-close-dialog aria-label="Schließen">×</button>
+        </div>
+        <p class="modal-intro">Nur die Aktivität - ohne Übungen, Sätze oder weitere Details. Die Kraftrotation bleibt unverändert.</p>
+        <fieldset>
+          <legend>Schnellauswahl</legend>
+          <div class="preset-grid">
+            <button type="button" class="button secondary" data-cardio-preset="Fahrradfahren">Fahrrad</button>
+            <button type="button" class="button secondary" data-cardio-preset="Schwimmen">Schwimmen</button>
+            <button type="button" class="button secondary" data-cardio-preset="Laufen">Laufen</button>
+          </div>
+        </fieldset>
+        <label>
+          Aktivität
+          <input name="activity" maxlength="60" required placeholder="z. B. Crosstrainer oder Wandern" />
+        </label>
+        <fieldset>
+          <legend>Dauer</legend>
+          <div class="preset-grid duration-grid">
+            <button type="button" class="button secondary" data-cardio-duration="30">30 Min.</button>
+            <button type="button" class="button secondary" data-cardio-duration="40">40 Min.</button>
+            <button type="button" class="button secondary" data-cardio-duration="45">45 Min.</button>
+            <button type="button" class="button secondary" data-cardio-duration="60">60 Min.</button>
+          </div>
+          <label class="duration-range">
+            Individuell
+            <span class="range-row">
+              <input name="duration" type="range" min="10" max="120" step="5" value="30" />
+              <output id="cardio-duration-output">30 Min.</output>
+            </span>
+          </label>
+        </fieldset>
+        <div class="modal-actions">
+          <button type="button" class="button ghost" data-close-dialog>Abbrechen</button>
+          <button type="submit" class="button primary">Cardio speichern</button>
+        </div>
+      </form>
+    </dialog>
+
+    <div id="toast" class="toast" role="status" aria-live="polite"></div>
+    <input id="import-file" type="file" accept="application/json,.json" hidden />
+
+    <noscript>
+      <div class="noscript">Für den Daily Coach muss JavaScript aktiviert sein.</div>
+    </noscript>
+    <script type="module" src="./js/app.mjs"></script>
+  </body>
+</html>

@@ -1,0 +1,27 @@
+# Dependencies and generated output
+node_modules/
+.pnpm-store/
+dist/
+
+# Environment variables and local configuration
+.env
+.env.*
+!.env.example
+*.local
+
+# Local app data, backups and exports
+backups/
+exports/
+*.backup.json
+hesselink-daily-coach-backup-*.json
+
+# Private working references (not required by the public app)
+Hesselink_Daily_Checklist_v1.pdf
+Hesselink_Daily_Checklist_v1_0_Druckversion_KORRIGIERT.pdf
+
+# Editor and operating-system files
+.DS_Store
+Thumbs.db
+.idea/
+.vscode/
+*.log
