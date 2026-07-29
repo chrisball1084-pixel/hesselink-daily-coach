@@ -74,9 +74,21 @@ test("Release-Version ist in Datenmodell und Oberfläche konsistent", async () =
     readFile(new URL("js/app.mjs", projectRoot), "utf8"),
   ]);
 
-  assert.match(core, /APP_VERSION = "1\.0\.0-beta\.1"/);
+  assert.match(core, /APP_VERSION = "1\.0\.0-beta\.2"/);
   assert.match(app, /Version 1\.0 Beta/);
-  assert.match(app, /v1\.0\.0-beta\.1/);
+  assert.match(app, /v1\.0\.0-beta\.2/);
+});
+
+test("Trainingskarte bleibt kompakt und Rückkehr setzt den aktuellen Tag", async () => {
+  const app = await readFile(new URL("js/app.mjs", projectRoot), "utf8");
+  assert.match(app, /<details\s+class="workout-card/);
+  assert.match(app, /von \$\{training\.planned\} geplanten Krafttrainings/);
+  assert.match(app, /window\.addEventListener\("pageshow", returnToCurrentDay\)/);
+  assert.match(app, /document\.addEventListener\("visibilitychange"/);
+  assert.match(app, /Workout \$\{WORKOUTS\[completedSession\.workout\]\.label\} abgeschlossen/);
+  assert.match(app, /expandedWorkoutDate = button\.dataset\.workoutDate/);
+  assert.match(app, /\$\{expandedWorkoutDate === dateKey \? "open" : ""\}/);
+  assert.doesNotMatch(app, /Heute zählt der erste Haken/);
 });
 
 test("App-Icons besitzen die deklarierten PNG-Abmessungen", async () => {

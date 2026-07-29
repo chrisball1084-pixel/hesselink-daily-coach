@@ -1,6 +1,6 @@
 export const SCHEMA_VERSION = 1;
 export const STORAGE_KEY = "hesselink.dailyCoach.v1";
-export const APP_VERSION = "1.0.0-beta.1";
+export const APP_VERSION = "1.0.0-beta.2";
 
 export const DAYS = [
   { short: "Mo", long: "Montag" },
@@ -67,6 +67,7 @@ export const DEFAULT_HABITS = [
     40,
     "Magnesium, Kreatin, Omega3, B-Komplex",
   ),
+  makeHabit("protein-shake", "Protein Shake", "Performance", 45),
   makeHabit("water", "2-3 Liter Wasser", "Discipline", 50),
   makeHabit(
     "protein-goal",
@@ -201,6 +202,20 @@ export function createDefaultState(now = new Date()) {
   return state;
 }
 
+export function addMissingDefaultHabits(state, now = new Date()) {
+  const existingIds = new Set(state.habits.map((habit) => habit.id));
+  const missing = DEFAULT_HABITS.filter((habit) => !existingIds.has(habit.id));
+  if (!missing.length) return false;
+
+  state.habits.push(
+    ...deepClone(missing).map((habit) => ({
+      ...habit,
+      createdAt: now.toISOString(),
+    })),
+  );
+  return true;
+}
+
 function habitSnapshot(habit) {
   return {
     id: habit.id,
@@ -295,6 +310,15 @@ export function ensureWeek(state, referenceDate = new Date()) {
 
   state.meta.updatedAt = new Date().toISOString();
   return state.weeks[key];
+}
+
+export function selectCurrentDay(state, now = new Date()) {
+  ensureWeek(state, now);
+  const todayKey = toDateKey(now);
+  const changed = state.ui.selectedDate !== todayKey;
+  state.ui.selectedDate = todayKey;
+  state.meta.updatedAt = now.toISOString();
+  return changed;
 }
 
 export function getWeekForDate(state, dateKey) {
@@ -794,7 +818,7 @@ export function habitStreakStats(
     name: occurrences.at(-1)?.name ?? habitId,
     current,
     best,
-    isPersonalRecord: current >= 2 && current === best,
+    isPersonalRecord: current >= 3 && current === best,
   };
 }
 
@@ -817,7 +841,7 @@ export function progressSummary(state, throughDate = new Date()) {
         a.name.localeCompare(b.name, "de"),
     );
   const records = [...streaks]
-    .filter((streak) => streak.best >= 2)
+    .filter((streak) => streak.best >= 3)
     .sort(
       (a, b) =>
         b.best - a.best ||
@@ -846,9 +870,9 @@ export function progressSummary(state, throughDate = new Date()) {
 
   return {
     streaks,
-    activeStreaks: streaks.filter((streak) => streak.current >= 2),
+    activeStreaks: streaks.filter((streak) => streak.current >= 3),
     records,
-    topCurrentStreak: streaks.find((streak) => streak.current >= 2) ?? null,
+    topCurrentStreak: streaks.find((streak) => streak.current >= 3) ?? null,
     topRecord: records[0] ?? null,
     strengthCount,
     nextTrainingMilestone: nextMilestone,

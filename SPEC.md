@@ -66,6 +66,7 @@ Persönliche Standardbeschreibungen:
 
 - 20 Minuten Bewegung oder mindestens 7.000 Schritte
 - Supplements
+- Protein Shake
 
 Persönliche Standardbeschreibung Supplements:
 „Magnesium, Kreatin, Omega3, B-Komplex“
@@ -82,7 +83,7 @@ Persönliche Standardbeschreibungen:
 - Proteinziel: „1.5g pro kg Körpergewicht“
 - 3-2-1-Abendroutine: „3h vor Bett keine Mahlzeit, 1h vor Bett kein Handy“
 
-Alle acht Gewohnheiten sind standardmäßig täglich aktiv und score-relevant.
+Alle neun Gewohnheiten sind standardmäßig täglich aktiv und score-relevant.
 
 ## 6. Gewohnheitszustände und Bedienung
 
@@ -193,13 +194,16 @@ als tatsächlich absolviertes Workout. Nach diesem Abschluss wird die weitere
 Vorschlagsfolge passend fortgesetzt. Über „Automatischen Vorschlag verwenden“
 kann der Tag jederzeit wieder in die dynamische Folge zurückgeführt werden.
 
-Auf geplanten Trainingstagen erscheint eine hervorgehobene Trainingskarte. Sie
-zeigt das nächste Workout und bietet:
+Auf geplanten Trainingstagen erscheint eine hervorgehobene, standardmäßig
+eingeklappte Trainingskarte. Eingeklappt zeigt sie das nächste Workout,
+Tagesstatus und den Wochenstand der geplanten Krafttrainings. Nach dem Aufklappen
+bietet sie:
 
 - Workout abschließen bzw. Abschluss rückgängig machen,
 - Training auf einen anderen Tag derselben Woche verschieben,
 - heute kein Training,
-- Übungen auf- und zuklappen.
+- Übungen direkt beim vorgeschlagenen Day-1-/Day-2-Workout,
+- Workout-Auswahl und Trainingsaktionen.
 
 Auf ungeplanten Tagen kann eine zusätzliche Einheit abgeschlossen werden.
 Gewichte, Sätze und einzelne Wiederholungen werden in Version 1.0 nicht erfasst.
@@ -303,7 +307,7 @@ Trainingseinheiten abgeleitet. Es wird kein separates Tracking benötigt.
 - Ein noch nicht abgeschlossener heutiger Tag beendet die Serie nicht vorzeitig.
 - Ein verpasster vergangener aktiver Termin setzt die aktuelle Serie zurück.
 - Der höchste bisherige Wert bleibt als persönlicher Bestwert erhalten.
-- Ab zwei aufeinanderfolgenden Treffern wird die Serie sichtbar.
+- Ab drei aufeinanderfolgenden Treffern wird die Serie sichtbar.
 - Erreicht die aktuelle Serie den bisherigen Bestwert, erscheint „Personal
   Record“.
 
@@ -316,10 +320,11 @@ separat summiert.
 
 ### Darstellung
 
-Die Heute-Ansicht zeigt die stärkste aktuelle Serie, weitere aktive Serien,
-persönliche Bestwerte und den Fortschritt zum nächsten Trainingsmeilenstein.
-Der Wochenrückblick zeigt denselben Progress mit dem Stand am Ende der
-ausgewählten Woche.
+Die Heute-Ansicht zeigt ab drei aufeinanderfolgenden Treffern die stärkste
+aktuelle Serie und weitere aktive Serien kompakt. Ohne aktive Serie wird kein
+Platzhalter angezeigt. Persönliche Bestwerte, die Gesamtzahl der Krafttrainings und der
+Fortschritt zum nächsten Trainingsmeilenstein erscheinen im Wochenrückblick mit
+dem Stand am Ende der ausgewählten Woche.
 
 ## 14. Datenschema
 

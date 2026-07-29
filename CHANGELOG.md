@@ -2,6 +2,40 @@
 
 Alle relevanten Änderungen am Hesselink Daily Coach werden hier dokumentiert.
 
+## [1.0.0-beta.2] - 2026-07-29
+
+Beta-Verbesserungen aus dem ersten iPhone-Praxistest.
+
+### Bedienung
+
+- beim erneuten Öffnen oder Zurückkehren wird immer der aktuelle Tag ausgewählt
+- kompakte, standardmäßig eingeklappte Trainingskarte hält die Daily Checklist
+  im Vordergrund
+- Day 1/Day 2, Tagesstatus und Wochenstand bleiben auch eingeklappt sichtbar
+- Übungen stehen nach dem Aufklappen direkt beim vorgeschlagenen Workout
+- klarer Abschlusstext „Workout Day 1/Day 2 abgeschlossen.“
+- Wochenfortschritt ersetzt den missverständlichen Gesamt-Meilenstein in der
+  Heute-Ansicht; Personal Records und Gesamtmeilensteine bleiben im Rückblick
+- Serien erscheinen auf „Heute“ erst ab drei aufeinanderfolgenden Tagen; ohne
+  aktive Serie bleibt die Ansicht frei
+- beim Wechsel zwischen Day 1 und Day 2 bleibt die geöffnete Trainingskarte
+  offen und zeigt sofort die passenden Übungen
+
+### Gewohnheiten und Daten
+
+- „Protein Shake“ als neunte tägliche, score-relevante
+  Performance-Standardgewohnheit ergänzt
+- bestehende Installationen erhalten die neue Gewohnheit nur für heute und
+  zukünftige Tage der offenen Woche
+- vergangene Tage und abgeschlossene Wochen bleiben durch die Migration
+  unverändert
+
+### Qualitätssicherung
+
+- 27 automatisierte Logik- und PWA-Tests
+- zusätzliche Tests für Tagesrückkehr, Standard-Migration und kompakte
+  Trainingskarte
+
 ## [1.0.0-beta.1] - 2026-07-29
 
 Erste öffentliche Beta-Version.

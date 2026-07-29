@@ -35,7 +35,7 @@ html {
 }
 
 body {
-  min-width: 320px;
+  min-width: 0;
   min-height: 100vh;
   margin: 0;
   background:
@@ -294,7 +294,7 @@ h3 {
 
 .day-strip {
   display: grid;
-  grid-template-columns: repeat(7, minmax(39px, 1fr));
+  grid-template-columns: repeat(7, minmax(0, 1fr));
   gap: 6px;
   margin: 0 -2px 20px;
 }
@@ -611,21 +611,70 @@ h3 {
   border-color: rgba(55, 214, 172, 0.48);
 }
 
-.workout-main {
-  padding: 18px;
-}
-
-.workout-topline {
+.workout-summary {
   display: flex;
   justify-content: space-between;
   gap: 16px;
-  align-items: start;
+  align-items: center;
+  min-height: 94px;
+  padding: 16px 18px;
+  cursor: pointer;
+  list-style: none;
 }
 
-.workout-topline h2 {
+.workout-summary::-webkit-details-marker {
+  display: none;
+}
+
+.workout-summary-copy,
+.workout-summary-meta {
+  display: flex;
+  flex-direction: column;
+}
+
+.workout-summary-copy {
+  min-width: 0;
+}
+
+.workout-summary-copy strong {
   margin-top: 3px;
   font-size: 1.55rem;
   text-transform: uppercase;
+}
+
+.workout-summary-copy small {
+  margin-top: 5px;
+  color: var(--muted);
+  font-size: 0.68rem;
+  line-height: 1.35;
+}
+
+.workout-summary-meta {
+  flex: 0 0 auto;
+  gap: 8px;
+  align-items: flex-end;
+}
+
+.workout-expand-label {
+  color: var(--cyan-bright);
+  font-size: 0.61rem;
+  font-weight: 800;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+}
+
+.workout-expand-label::after {
+  margin-left: 5px;
+  content: "+";
+}
+
+.workout-card[open] .workout-expand-label::after {
+  content: "−";
+}
+
+.workout-panel {
+  border-top: 1px solid var(--line);
+  padding: 0 18px 18px;
 }
 
 .workout-label {
@@ -727,21 +776,15 @@ h3 {
   opacity: 0.45;
 }
 
-.workout-more {
-  border-top: 1px solid var(--line);
-}
-
-.workout-more summary {
-  padding: 13px 18px;
-  color: var(--muted);
-  font-size: 0.72rem;
-  font-weight: 750;
-  cursor: pointer;
+.workout-exercises {
+  margin: 0 -18px 2px;
+  border-bottom: 1px solid var(--line);
+  padding: 16px 18px;
 }
 
 .exercise-list {
-  margin: 0;
-  padding: 0 18px 18px 40px;
+  margin: 10px 0 0;
+  padding: 0 0 0 22px;
   color: #c4d2dc;
   font-size: 0.76rem;
   line-height: 1.55;
@@ -1485,6 +1528,7 @@ output {
   display: grid;
   gap: 8px;
   border-top: 1px solid var(--line);
+  margin: 16px -18px -18px;
   padding: 14px 18px 18px;
 }
 
@@ -1541,6 +1585,18 @@ output {
 .progress-card-head h2 {
   font-size: 1.15rem;
   text-transform: uppercase;
+}
+
+.progress-card-compact {
+  padding: 14px 16px;
+}
+
+.progress-card-compact .progress-card-head {
+  margin-bottom: 0;
+}
+
+.progress-card-compact .streak-list {
+  margin-top: 10px;
 }
 
 .record-badge {

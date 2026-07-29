@@ -2,8 +2,10 @@ import {
   APP_VERSION,
   SCHEMA_VERSION,
   STORAGE_KEY,
+  addMissingDefaultHabits,
   createDefaultState,
   ensureWeek,
+  syncOpenWeekPlans,
   validateImportedData,
 } from "./core.mjs";
 
@@ -17,7 +19,9 @@ export function loadState(now = new Date()) {
     }
     const state = validateImportedData(parsed);
     state.meta.appVersion = APP_VERSION;
+    const defaultsAdded = addMissingDefaultHabits(state, now);
     ensureWeek(state, now);
+    if (defaultsAdded) syncOpenWeekPlans(state, now);
     return state;
   } catch (error) {
     console.warn("Lokale Daten konnten nicht geladen werden.", error);
@@ -33,7 +37,9 @@ export function saveState(state) {
 export function replaceState(candidate, now = new Date()) {
   const state = validateImportedData(candidate);
   state.meta.appVersion = APP_VERSION;
+  const defaultsAdded = addMissingDefaultHabits(state, now);
   ensureWeek(state, now);
+  if (defaultsAdded) syncOpenWeekPlans(state, now);
   saveState(state);
   return state;
 }

@@ -16,6 +16,7 @@ import {
   reviewForWeek,
   scoreDay,
   scoreWeek,
+  selectCurrentDay,
   setHabitOrder,
   setWeekFocus,
   setWorkoutForDate,
@@ -57,6 +58,7 @@ let deferredInstallPrompt = null;
 let toastTimer = null;
 let moveSourceDate = null;
 let cardioSourceDate = null;
+let expandedWorkoutDate = null;
 
 ensureWeek(state, new Date());
 state.ui.selectedDate = toDateKey(new Date());
@@ -125,6 +127,12 @@ function render() {
   });
 }
 
+function returnToCurrentDay() {
+  selectCurrentDay(state, new Date());
+  saveState(state);
+  render();
+}
+
 function renderDayStrip(dateKey) {
   const today = toDateKey(new Date());
   return `
@@ -166,7 +174,7 @@ function motivation(score, dateKey) {
   return `Heute sind ${score.earned} von ${score.possible} erledigt. Der nächste Schritt zählt.`;
 }
 
-function renderProgressCard(referenceDate = new Date()) {
+function renderProgressCard(referenceDate = new Date(), showRecords = false) {
   const progress = progressSummary(state, referenceDate);
   const streak = progress.topCurrentStreak;
   const record = progress.topRecord;
@@ -181,6 +189,28 @@ function renderProgressCard(referenceDate = new Date()) {
         ? `Bestwert ${record.best}`
         : "Dein Fortschritt";
 
+  if (!showRecords) {
+    if (!streak) return "";
+    return `
+      <article class="progress-card progress-card-compact">
+        <div class="progress-card-head">
+          <div>
+            <span class="eyebrow">Aktuelle Serie</span>
+            <h2>${streak.current} Tage · ${escapeHtml(streak.name)}</h2>
+          </div>
+        </div>
+        <div class="streak-list" aria-label="Aktive Serien">
+          ${progress.activeStreaks
+            .slice(0, 4)
+            .map(
+              (item) =>
+                `<span class="streak-chip"><b>${item.current}</b> · ${escapeHtml(item.name)}</span>`,
+            )
+            .join("")}
+        </div>
+      </article>`;
+  }
+
   return `
     <article class="progress-card">
       <div class="progress-card-head">
@@ -194,7 +224,7 @@ function renderProgressCard(referenceDate = new Date()) {
         <div class="progress-stat">
           <small>Aktuelle Serie</small>
           <strong>${streak ? `${streak.current} Tage` : "Start"}</strong>
-          <span>${escapeHtml(streak?.name ?? "Heute zählt der erste Haken")}</span>
+          <span>${escapeHtml(streak?.name ?? "Keine aktive Serie")}</span>
         </div>
         <div class="progress-stat">
           <small>Krafttrainings</small>
@@ -214,7 +244,7 @@ function renderProgressCard(referenceDate = new Date()) {
                 )
                 .join("")}
             </div>`
-          : `<p class="subtle" style="margin: 12px 0 0; font-size: .7rem">Zwei aufeinanderfolgende aktive Tage starten die erste sichtbare Serie.</p>`
+          : `<p class="subtle" style="margin: 12px 0 0; font-size: .7rem">Drei aufeinanderfolgende aktive Tage starten die erste sichtbare Serie.</p>`
       }
     </article>`;
 }
@@ -322,6 +352,7 @@ function renderWorkoutCard(week, dateKey) {
   );
   const workoutKey = workoutForDate(state, dateKey);
   const workout = WORKOUTS[workoutKey];
+  const training = trainingSummary(week);
   const today = toDateKey(new Date());
   const canAct = dateKey <= today && week.status === "open";
   const canConfigure =
@@ -336,16 +367,29 @@ function renderWorkoutCard(week, dateKey) {
         : "Optional";
 
   return `
-    <article class="workout-card ${plan ? "is-planned" : ""} ${session ? "is-complete" : ""}">
-      <div class="workout-main">
-        <div class="workout-topline">
-          <div>
-            <span class="workout-label">${plan ? "Trainingstag" : "Nächstes Workout"}</span>
-            <h2>${escapeHtml(workout.label)}</h2>
-          </div>
+    <details
+      class="workout-card ${plan ? "is-planned" : ""} ${session ? "is-complete" : ""}"
+      data-workout-card-date="${dateKey}"
+      ${expandedWorkoutDate === dateKey ? "open" : ""}
+    >
+      <summary class="workout-summary">
+        <span class="workout-summary-copy">
+          <span class="workout-label">${plan ? "Trainingstag" : "Nächstes Workout"}</span>
+          <strong>${escapeHtml(workout.label)}</strong>
+          <small>${training.completedPlanned} von ${training.planned} geplanten Krafttrainings</small>
+        </span>
+        <span class="workout-summary-meta">
           <span class="workout-status ${session ? "done" : ""}">${statusText}</span>
-        </div>
-        <p class="subtle">${session ? "Einheit erfasst. Die Rotation ist weitergeschaltet." : plan ? "Das Workout wechselt erst nach einem tatsächlichen Abschluss." : "Zusätzliche Einheiten sind möglich und zählen separat."}</p>
+          <span class="workout-expand-label" aria-hidden="true">Details</span>
+        </span>
+      </summary>
+      <div class="workout-panel">
+        <section class="workout-exercises" aria-labelledby="workout-exercises-${dateKey}">
+          <span class="eyebrow" id="workout-exercises-${dateKey}">Übungen · ${escapeHtml(workout.label)}</span>
+          <ol class="exercise-list">
+            ${workout.exercises.map((exercise) => `<li>${escapeHtml(exercise)}</li>`).join("")}
+          </ol>
+        </section>
         ${
           canConfigure
             ? `<div class="workout-selector" aria-label="Workout für diesen Tag auswählen">
@@ -379,10 +423,9 @@ function renderWorkoutCard(week, dateKey) {
               : ""
           }
         </div>
-      </div>
-      ${
-        cardioSessions.length
-          ? `<div class="cardio-sessions" aria-label="Erfasste Cardio-Trainings">
+        ${
+          cardioSessions.length
+            ? `<div class="cardio-sessions" aria-label="Erfasste Cardio-Trainings">
               ${cardioSessions
                 .map(
                   (cardio) => `
@@ -395,16 +438,11 @@ function renderWorkoutCard(week, dateKey) {
                     </div>`,
                 )
                 .join("")}
-            </div>`
-          : ""
-      }
-      <details class="workout-more">
-        <summary>Übungen anzeigen</summary>
-        <ol class="exercise-list">
-          ${workout.exercises.map((exercise) => `<li>${escapeHtml(exercise)}</li>`).join("")}
-        </ol>
-      </details>
-    </article>`;
+              </div>`
+            : ""
+        }
+      </div>
+    </details>`;
 }
 
 function renderWeek() {
@@ -580,7 +618,7 @@ function renderReview() {
         </div>
       </article>
 
-      ${renderProgressCard(week.endDate)}
+      ${renderProgressCard(week.endDate, true)}
 
       <article class="review-card highlight">
         <span class="eyebrow">Ein Fokus für nächste Woche</span>
@@ -614,7 +652,7 @@ function renderSettings() {
     <section class="view" data-view-panel="settings">
       <header class="page-head">
         <div><span class="eyebrow">Einstellungen</span><h1>Dein System</h1></div>
-        <div class="date-copy"><strong>Version 1.0 Beta</strong>v1.0.0-beta.1</div>
+        <div class="date-copy"><strong>Version 1.0 Beta</strong>v1.0.0-beta.2</div>
       </header>
 
       <div class="settings-stack">
@@ -847,6 +885,7 @@ document.addEventListener("click", async (event) => {
   }
   if (button.dataset.setDayWorkout) {
     try {
+      expandedWorkoutDate = button.dataset.workoutDate;
       setWorkoutForDate(
         state,
         button.dataset.workoutDate,
@@ -880,7 +919,7 @@ document.addEventListener("click", async (event) => {
     const planned = Boolean(week.training.plans[dateKey]);
     const completedSession = completeWorkout(state, dateKey, planned);
     haptic();
-    persist(`${WORKOUTS[completedSession.workout].label} abgeschlossen.`);
+    persist(`Workout ${WORKOUTS[completedSession.workout].label} abgeschlossen.`);
     return;
   }
   if (button.dataset.undoWorkout) {
@@ -1026,6 +1065,20 @@ document.addEventListener("change", (event) => {
   }
 });
 
+app.addEventListener(
+  "toggle",
+  (event) => {
+    const card = event.target.closest?.("[data-workout-card-date]");
+    if (!card || card !== event.target) return;
+    if (card.open) {
+      expandedWorkoutDate = card.dataset.workoutCardDate;
+    } else if (expandedWorkoutDate === card.dataset.workoutCardDate) {
+      expandedWorkoutDate = null;
+    }
+  },
+  true,
+);
+
 weekForm.elements.targetPercent.addEventListener("input", (event) => {
   document.querySelector("#target-output").value = `${event.target.value} %`;
 });
@@ -1169,6 +1222,10 @@ window.addEventListener("online", () => showToast("Wieder online."));
 window.addEventListener("offline", () =>
   showToast("Offline-Modus aktiv. Deine Daten bleiben verfügbar."),
 );
+window.addEventListener("pageshow", returnToCurrentDay);
+document.addEventListener("visibilitychange", () => {
+  if (!document.hidden) returnToCurrentDay();
+});
 
 if ("serviceWorker" in navigator) {
   window.addEventListener("load", () => {

@@ -6,13 +6,13 @@ regelbasierte Rückblicke.
 ## Release
 
 - Produktname: Hesselink Daily Coach v1.0 Beta
-- technische Version: `v1.0.0-beta.1`
-- geplanter Repository-Name: `hesselink-daily-coach`
-- geplante URL:
-  `https://BENUTZERNAME.github.io/hesselink-daily-coach/`
+- technische Version: `v1.0.0-beta.2`
+- Repository: `chrisball1084-pixel/hesselink-daily-coach`
+- öffentliche URL:
+  `https://chrisball1084-pixel.github.io/hesselink-daily-coach/`
 
-Die Veröffentlichung auf GitHub Pages erfolgt erst nach ausdrücklicher
-Freigabe. Der Production-Build und der Deployment-Workflow sind vorbereitet.
+Die bestehende Beta ist auf GitHub Pages veröffentlicht. Neue Versionen werden
+erst nach ausdrücklicher Freigabe auf `main` übertragen.
 
 ## Datenschutz und technische Leitplanken
 
@@ -32,13 +32,14 @@ werden.
 
 ## Funktionen
 
-- acht tägliche Standardgewohnheiten mit persönlichen Beschreibungen
+- neun tägliche Standardgewohnheiten mit persönlichen Beschreibungen
 - Tageskorrektur innerhalb der aktuellen Woche
 - dynamischer Tages- und Wochenscore
 - unveränderliche historische Tages- und Wochen-Snapshots
 - frei konfigurierbare Gewohnheiten
 - fortlaufende Day-1-/Day-2-Trainingsrotation
 - automatische und manuell anpassbare Workout-Vorschläge
+- kompakte, aufklappbare Trainingskarte mit Wochenstand
 - Cardio mit Aktivität und Dauer
 - Gewohnheitsserien, persönliche Bestwerte und Trainingsmeilensteine
 - Wochenstart, mobile Wochenübersicht und regelbasierter Rückblick
@@ -113,7 +114,6 @@ Die `.gitignore` schließt insbesondere folgende lokale Inhalte aus:
 
 - keine geräteübergreifende Synchronisierung
 - bei Browserdaten-Löschung gehen Daten ohne vorheriges JSON-Backup verloren
-- Installation und Offline-Neustart müssen zusätzlich auf einem echten iPhone
-  geprüft werden
+- Installation und Kernbedienung wurden auf einem echten iPhone geprüft
 - GitHub Pages benötigt HTTPS und einen erfolgreichen ersten Seitenaufruf,
   bevor die Offline-Nutzung zuverlässig verfügbar ist

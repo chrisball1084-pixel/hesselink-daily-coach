@@ -16,7 +16,8 @@
 
 ## Gewohnheiten und Score
 
-- [x] acht Standardgewohnheiten anlegen
+- [x] neun Standardgewohnheiten einschließlich Protein Shake anlegen
+- [x] Protein Shake bei bestehenden Installationen historisch sicher ergänzen
 - [x] persönliche Beta-Beschreibungen als neue Defaults übernehmen
 - [x] Check-ins mit Rückgängig-Funktion und Haptik umsetzen
 - [x] vergangene Tage der laufenden Woche editierbar machen
@@ -37,6 +38,10 @@
 - [x] Day 1/Day 2 pro Trainingstag manuell anpassbar machen
 - [x] Vorschläge nach ausgelassenen Einheiten ohne Rotationssprung neu berechnen
 - [x] Übungen aufklappbar darstellen
+- [x] Trainingskarte kompakt einklappbar machen und Wochenstand anzeigen
+- [x] Übungen direkt beim Day-1-/Day-2-Vorschlag anordnen
+- [x] Trainingskarte beim manuellen Day-1-/Day-2-Wechsel geöffnet halten
+- [x] klare Workout-Abschlussmeldung anzeigen
 - [x] manuelle Rotationskorrektur bereitstellen
 
 ## Woche und Rückblick
@@ -50,8 +55,9 @@
 - [x] genau eine regelbasierte Empfehlung erzeugen
 - [x] Reflexionsfelder speichern
 - [x] Gewohnheitsserien und persönliche Bestwerte berechnen
+- [x] Serien erst ab drei aufeinanderfolgenden Tagen sichtbar machen
 - [x] Krafttrainings-Meilensteine und Cardio-Minuten auswerten
-- [x] Progress in Heute und Wochenrückblick anzeigen
+- [x] Serien kompakt in Heute und Gesamtfortschritt im Rückblick anzeigen
 
 ## Daten und PWA
 
@@ -69,6 +75,7 @@
 - [x] Service-Worker-Cache und Offline-Fallback statisch prüfen
 - [x] mobile Darstellung bei 320, 375 und 430 Pixel prüfen
 - [x] Touch-, Fokus- und Tastaturbedienung prüfen
+- [x] Rückkehr zur App setzt die Tagesauswahl auf das aktuelle Datum
 - [x] Dokumentation nach finalem Stand aktualisieren
 - [ ] Installation und Offline-Neustart auf einem echten iPhone testen
 

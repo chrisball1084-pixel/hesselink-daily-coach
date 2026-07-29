@@ -2,6 +2,7 @@ import assert from "node:assert/strict";
 import test from "node:test";
 
 import {
+  addMissingDefaultHabits,
   clearWorkoutOverrideForDate,
   completeCardio,
   completeWorkout,
@@ -15,6 +16,7 @@ import {
   reviewForWeek,
   scoreDay,
   scoreWeek,
+  selectCurrentDay,
   setWeekFocus,
   setWorkoutForDate,
   skipWorkout,
@@ -50,17 +52,17 @@ test("Wochenfokus wird aus aktiven Gewohnheiten gewählt und historisch eingefro
   );
 });
 
-test("Ausgangskonfiguration hat acht Tages- und 56 Wochenpunkte", () => {
+test("Ausgangskonfiguration hat neun Tages- und 63 Wochenpunkte", () => {
   const state = createDefaultState(monday);
   const week = ensureWeek(state, monday);
   assert.deepEqual(scoreDay(week, "2026-07-27"), {
     earned: 0,
-    possible: 8,
+    possible: 9,
     percent: 0,
   });
   assert.deepEqual(scoreWeek(week), {
     earned: 0,
-    possible: 56,
+    possible: 63,
     percent: 0,
   });
 });
@@ -76,6 +78,7 @@ test("persönliche Gewohnheitsbeschreibungen sind als Defaults hinterlegt", () =
     descriptions.supplements,
     "Magnesium, Kreatin, Omega3, B-Komplex",
   );
+  assert.equal(descriptions["protein-shake"], "");
   assert.equal(
     descriptions["evening-routine"],
     "3h vor Bett keine Mahlzeit, 1h vor Bett kein Handy",
@@ -96,30 +99,57 @@ test("aktive Wochentage verändern den dynamischen Maximalwert korrekt", () => {
   state.habits.find((habit) => habit.id === "supplements").activeDays = [0];
   syncOpenWeekPlans(state, monday);
   const week = ensureWeek(state, monday);
-  assert.equal(scoreWeek(week).possible, 50);
+  assert.equal(scoreWeek(week).possible, 57);
 });
 
 test("Änderungen ab heute lassen vergangene Tages-Snapshots unverändert", () => {
   const state = createDefaultState(wednesday);
   const week = ensureWeek(state, wednesday);
-  assert.equal(week.dailyPlans["2026-07-27"].length, 8);
+  assert.equal(week.dailyPlans["2026-07-27"].length, 9);
   state.habits.find((habit) => habit.id === "supplements").active = false;
   syncOpenWeekPlans(state, wednesday);
-  assert.equal(week.dailyPlans["2026-07-27"].length, 8);
-  assert.equal(week.dailyPlans["2026-07-29"].length, 7);
-  assert.equal(week.dailyPlans["2026-08-02"].length, 7);
+  assert.equal(week.dailyPlans["2026-07-27"].length, 9);
+  assert.equal(week.dailyPlans["2026-07-29"].length, 8);
+  assert.equal(week.dailyPlans["2026-08-02"].length, 8);
 });
 
 test("abgeschlossene Wochen behalten Konfiguration und Maximalwert", () => {
   const state = createDefaultState(monday);
   const firstWeek = ensureWeek(state, monday);
-  assert.equal(scoreWeek(firstWeek).possible, 56);
+  assert.equal(scoreWeek(firstWeek).possible, 63);
   ensureWeek(state, new Date(2026, 7, 3, 10));
   assert.equal(firstWeek.status, "closed");
   state.habits.find((habit) => habit.id === "water").active = false;
   syncOpenWeekPlans(state, new Date(2026, 7, 3, 10));
-  assert.equal(scoreWeek(firstWeek).possible, 56);
-  assert.equal(scoreWeek(state.weeks["2026-08-03"]).possible, 49);
+  assert.equal(scoreWeek(firstWeek).possible, 63);
+  assert.equal(scoreWeek(state.weeks["2026-08-03"]).possible, 56);
+});
+
+test("Protein-Shake-Migration ergänzt nur heute und zukünftige Tage der offenen Woche", () => {
+  const state = createDefaultState(wednesday);
+  const week = ensureWeek(state, wednesday);
+  state.habits = state.habits.filter((habit) => habit.id !== "protein-shake");
+  Object.values(week.dailyPlans).forEach((plan) => {
+    const index = plan.findIndex((habit) => habit.id === "protein-shake");
+    if (index >= 0) plan.splice(index, 1);
+  });
+
+  assert.equal(addMissingDefaultHabits(state, wednesday), true);
+  syncOpenWeekPlans(state, wednesday);
+
+  assert.equal(week.dailyPlans["2026-07-27"].length, 8);
+  assert.equal(week.dailyPlans["2026-07-28"].length, 8);
+  assert.equal(week.dailyPlans["2026-07-29"].length, 9);
+  assert.equal(week.dailyPlans["2026-08-02"].length, 9);
+  assert.equal(addMissingDefaultHabits(state, wednesday), false);
+});
+
+test("Beim Zurückkehren wird immer der aktuelle Tag ausgewählt", () => {
+  const state = createDefaultState(monday);
+  state.ui.selectedDate = "2026-07-28";
+  assert.equal(selectCurrentDay(state, wednesday), true);
+  assert.equal(state.ui.selectedDate, "2026-07-29");
+  assert.equal(selectCurrentDay(state, wednesday), false);
 });
 
 test("Workout-Rotation folgt ausschließlich tatsächlichen Abschlüssen", () => {
@@ -238,6 +268,23 @@ test("Gewohnheitsserien und persönliche Bestwerte laufen über Wochen weiter", 
   );
   assert.equal(laterStats.current, 2);
   assert.equal(laterStats.best, 5);
+});
+
+test("Serien werden erst ab drei aufeinanderfolgenden Tagen sichtbar", () => {
+  const state = createDefaultState(monday);
+  toggleHabit(state, "2026-07-27", "no-bullshit");
+  toggleHabit(state, "2026-07-28", "no-bullshit");
+
+  const afterTwo = progressSummary(state, "2026-07-28");
+  assert.equal(afterTwo.topCurrentStreak, null);
+  assert.equal(afterTwo.activeStreaks.length, 0);
+  assert.equal(afterTwo.records.length, 0);
+
+  toggleHabit(state, "2026-07-29", "no-bullshit");
+  const afterThree = progressSummary(state, "2026-07-29");
+  assert.equal(afterThree.topCurrentStreak.id, "no-bullshit");
+  assert.equal(afterThree.topCurrentStreak.current, 3);
+  assert.equal(afterThree.records[0].best, 3);
 });
 
 test("Trainingsfortschritt zeigt den nächsten Meilenstein", () => {

@@ -1,4 +1,4 @@
-const CACHE_NAME = "hesselink-daily-coach-v1.0.0-beta.1";
+const CACHE_NAME = "hesselink-daily-coach-v1.0.0-beta.2";
 const STATIC_SHELL = [
   "./",
   "./index.html",
